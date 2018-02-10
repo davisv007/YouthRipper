@@ -1,6 +1,8 @@
 from __future__ import unicode_literals
 import youtube_dl #downloads youtube via links
 import datetime #date and time stamp
+import re
+
 
 #MyLogger uses the Logger module to display error logs
 class MyLogger(object):
@@ -34,20 +36,28 @@ ydl_opts = {
 
 def main():
 
-    url ="https://www.youtube.com/watch?v=4o5baMYWdtQ" #url link to youtube
-    # url = "https://www.youtube.com/watch?v=-tT32VTll5M"
-    # url = "https://www.youtube.com/watch?v=FUXX55WqYZs"
+    # url ="https://www.youtube.com/watch?v=4o5baMYWdtQ"
+    # url = "https://www.youtube.com/watch?v=-tT32VTll5M" #frank ocean - blonde no track times
+    # url = "https://www.youtube.com/watch?v=FUXX55WqYZs" #tyler the creator - who dat boy
+    # url = "https://www.youtube.com/watch?v=D1ZpZ_dvd_4" #artic monkey  with tracktimes in description
+    # url = "https://www.youtube.com/watch?v=yzssslz4r70" #plantasia - mort garson with tracktimes in different format
+    url ="https://www.youtube.com/watch?v=q59ZZtiLgYU" # hot funky jazz tracklistings, longer than an hour
+
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         info_dict = ydl.extract_info(url, download=False)
         # print(info_dict.keys())
         artist = info_dict['creator']
         description = info_dict['description']
         title = info_dict['title']
-        length =datetime.timedelta(seconds= info_dict['duration'])
-        # print(artist)
+        duration = info_dict['duration']
+        length =datetime.timedelta(seconds= duration)
+        print(artist)
         # print(description)
-        # print(title)
+        print(title)
+        print(duration)
         print(length)
+
+
 
         # if artist:
         #     print('The artist is {0}.'.format(artist))
@@ -56,8 +66,15 @@ def main():
         # else:
         #     artist = input('There is no artist for this album. Who is the artist? ')
         # ydl_opts['outtmpl']='/output/{0}/%(title)s'.format(artist)
+    pattern =r'[0-9]{2}:[0-9]{2}:[0-9]{2}|[0-9]{2}:[0-9]{2}|[0-9]:[0-9]{2}'
+
+    p = re.compile(pattern=pattern)
+    x=p.findall(description)
+    print(x)
+    # print(len(x))
     # with youtube_dl.YoutubeDL(ydl_opts) as ydl:
     #     ydl.download([url])
+
 
 
 
