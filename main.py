@@ -2,7 +2,8 @@ from __future__ import unicode_literals
 import youtube_dl #downloads youtube via links
 import datetime #date and time stamp
 import re
-
+from googlesearch import search
+from musixmatch import Musixmatch
 
 #MyLogger uses the Logger module to display error logs
 class MyLogger(object):
@@ -16,6 +17,10 @@ class MyLogger(object):
         print(msg)
 
 #Determines when video is done converting
+def search_title():
+    musixmatch = Musixmatch('aadefa8e37881923e8db0e2456f30a48')
+    pass
+
 def my_hook(d):
     if d['status'] == 'finished':
         print('Done downloading, now converting ...')
@@ -43,6 +48,8 @@ def main():
     # url = "https://www.youtube.com/watch?v=yzssslz4r70" #plantasia - mort garson with tracktimes in different format
     url ="https://www.youtube.com/watch?v=q59ZZtiLgYU" # hot funky jazz tracklistings, longer than an hour
 
+    # url = "https://www.youtube.com/watch?v=-tT32VTll5M"
+    url = "https://www.youtube.com/watch?v=FUXX55WqYZs"
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         info_dict = ydl.extract_info(url, download=False)
         # print(info_dict.keys())
@@ -55,6 +62,11 @@ def main():
         # print(description)
         print(title)
         print(duration)
+        length =datetime.timedelta(seconds= info_dict['duration'])
+        print(artist)
+        print(description)
+        # print(title)
+        print(title.split())
         print(length)
 
 
