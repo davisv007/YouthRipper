@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 import youtube_dl
 import datetime
 
-# hdhfhf
+
 class MyLogger(object):
     def debug(self, msg):
         pass
