@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 import youtube_dl
+import datetime
 
 
 class MyLogger(object):
@@ -29,11 +30,34 @@ ydl_opts = {
     'logger': MyLogger(),
     'progress_hooks': [my_hook],
 }
-url ="https://www.youtube.com/watch?v=4o5baMYWdtQ"
-# url="https://www.youtube.com/watch?v=FUXX55WqYZs"
-with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-    # ydl.download([url])
-    info_dict = ydl.extract_info(url, download=False)
-    # print(info_dict)
-    print(info_dict['creator'])
-    print(info_dict.keys())
+
+
+def main():
+
+    # url ="https://www.youtube.com/watch?v=4o5baMYWdtQ"
+    url = "https://www.youtube.com/watch?v=-tT32VTll5M"
+    # url = "https://www.youtube.com/watch?v=FUXX55WqYZs"
+    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        info_dict = ydl.extract_info(url, download=False)
+        # print(info_dict.keys())
+        artist = info_dict['creator']
+        description = info_dict['description']
+        title = info_dict['title']
+        length =datetime.timedelta(seconds= info_dict['duration'])
+        # print(artist)
+        # print(description)
+        # print(title)
+        print(length)
+
+        # if artist:
+        #     print('The artist is {0}.'.format(artist))
+        #     answer = input('If this is correct, press enter, otherwise enter the correct artist: ')
+        #     artist = answer if answer != '' else artist
+        # else:
+        #     artist = input('There is no artist for this album. Who is the artist? ')
+        # ydl_opts['outtmpl']='/output/{0}/%(title)s'.format(artist)
+    # with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+    #     ydl.download([url])
+
+
+main()
