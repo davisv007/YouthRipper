@@ -1,8 +1,8 @@
 from __future__ import unicode_literals
-import youtube_dl
-import datetime
+import youtube_dl #downloads youtube via links
+import datetime #date and time stamp
 
-
+#MyLogger uses the Logger module to display error logs
 class MyLogger(object):
     def debug(self, msg):
         pass
@@ -13,12 +13,12 @@ class MyLogger(object):
     def error(self, msg):
         print(msg)
 
-
+#Determines when video is done converting
 def my_hook(d):
     if d['status'] == 'finished':
         print('Done downloading, now converting ...')
 
-
+#Dictactes youtube video options based on arguments such as format and artist information
 ydl_opts = {
     'format': 'bestaudio/best',
     'outtmpl': '/output/%(artist)s/%(title)s',
