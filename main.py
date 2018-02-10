@@ -1,9 +1,10 @@
 from __future__ import unicode_literals
 import youtube_dl #downloads youtube via links
 import datetime #date and time stamp
-import re
-from googlesearch import search
+import re #regular expression module used for searching patterns
+from googlesearch import search #search module
 from musixmatch import Musixmatch
+
 
 #MyLogger uses the Logger module to display error logs
 class MyLogger(object):
@@ -78,9 +79,9 @@ def main():
         # else:
         #     artist = input('There is no artist for this album. Who is the artist? ')
         # ydl_opts['outtmpl']='/output/{0}/%(title)s'.format(artist)
-    pattern =r'[0-9]{2}:[0-9]{2}:[0-9]{2}|[0-9]{2}:[0-9]{2}|[0-9]:[0-9]{2}'
+    pattern =r'[0-9]{2}:[0-9]{2}:[0-9]{2}|[0-9]{2}:[0-9]{2}|[0-9]:[0-9]{2}' #Time stamp length #Hour:Minute:Seconds or Minute:Second or Second:Second
 
-    p = re.compile(pattern=pattern)
+    p = re.compile(pattern=pattern) #compiles pattern
     x=p.findall(description)
     print(x)
     # print(len(x))
