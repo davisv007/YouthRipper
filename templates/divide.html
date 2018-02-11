@@ -1,7 +1,38 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <title>YOUTHRIPPER</title>
+
+        <!-- Bootstrap core CSS -->
+        <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom fonts for this template -->
+        <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href="vendor/simple-line-icons/css/simple-line-icons.css" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+
+        <!-- Custom styles for this template -->
+        <link href="css/landing-page.min.css" rel="stylesheet">
+
+    </head>
+
     <body>
-        <form method="post" action="{{ url_for('divide') }}">
+
+        <header class="masthead text-white text-center">
+            <div class="overlay"></div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-9 mx-auto">
+                        <h1 class="mb-5">YouthRipper</h1>
+                    </div>
+                    <div class="col-md-10 col-lg-8 col-xl-7 mx-auto">
+           <form method="post" action="{{ url_for('divide') }}">
             {{ form.hidden_tag() }}
 
             {{ form.webLink.label }} {{ form.webLink() }}
@@ -10,9 +41,19 @@
             {% endif %}
 
             <input type="submit" value="Download"/>
-        </form>
-        {% if result %}
-                <a href="{{result}}" download=result> Download Here </a>
-        {% endif %}
+            </form>
+            {% if result %}
+                    <a href="{{result}}" download=result> Download Here </a>
+            {% endif %}
+                </div>
+                </div>
+            </div>
+
+
+        </header>
+        <!-- Bootstrap core JavaScript -->
+        <script src="vendor/jquery/jquery.min.js"></script>
+        <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
     </body>
 </html>
