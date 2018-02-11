@@ -4,7 +4,7 @@ import datetime #date and time stamp
 import re #regular expression module used for searching patterns
 from musixmatch import Musixmatch
 import pylast
-import googlesearch
+
 
 API_KEY = "a0472e3ba14a8c6b2d373f25f7214f47"
 API_SECRET = "e3706cbf68860e14e3da9bf6968b66c4"
@@ -25,13 +25,13 @@ class MyLogger(object):
 #Determines when video is done converting
 
 
+
 def search_tracks(artist):
     album_tracks = pylast.Album(artist, album, network)
     tracks = album_tracks.get_tracks()
     # print(str(tracks[0]).split('-')[1])
-
-    for track in tracks:
-        print(str(track).split('- ')[1])
+    tracks = [str(track).split('- ')[1] for track in tracks]
+    # [print(track) for track in tracks]
     return tracks
 
 
@@ -39,16 +39,19 @@ def album_info(artist):
     album_information = pylast.Album(artist, album, network)
     summary = album_information.get_wiki_summary()
     release_date = album_information.get_release_date()
-    #print(summary)
-    return summary
+    return release_date
+
 
 def got_cover_art(artist):
     art = pylast.Album(artist, album, network)
     cover_art =  art.get_cover_image(size=pylast.COVER_EXTRA_LARGE)
     return cover_art
+
+
 def my_hook(d):
     if d['status'] == 'finished':
         print('Done downloading, now converting ...')
+
 
 #Dictactes youtube video options based on arguments such as format and artist information
 ydl_opts = {
@@ -68,8 +71,8 @@ def main():
 
     # url ="https://www.youtube.com/watch?v=4o5baMYWdtQ"
     # url = "https://www.youtube.com/watch?v=-tT32VTll5M" #frank ocean - blonde no track times
-    url = "https://www.youtube.com/watch?v=FUXX55WqYZs" #tyler the creator - who dat boy
-    # url = "https://www.youtube.com/watch?v=D1ZpZ_dvd_4" #artic monkey  with tracktimes in description
+    # url = "https://www.youtube.com/watch?v=FUXX55WqYZs" #tyler the creator - who dat boy
+    url = "https://www.youtube.com/watch?v=D1ZpZ_dvd_4" #artic monkey  with tracktimes in description
     # url = "https://www.youtube.com/watch?v=yzssslz4r70" #plantasia - mort garson with tracktimes in different format
     # url ="https://www.youtube.com/watch?v=q59ZZtiLgYU" # hot funky jazz tracklistings, longer than an hour
 
@@ -90,15 +93,17 @@ def main():
         album_information = {"summary": summary, "genre": genres, "album_length": length}
         # for key in album_information:
         #     print(album_information[key])
-        print(cover_art)
+        # print(get_album_title(title, artist))
+        # print(cover_art)
         # print(info_dict['categories'])
-        # # print(info_dict)
+        # print(info_dict)
         # print(artist)
         # print(tracks)
         # # print(description)
         # print(title)
         # print(duration)
         # print(length)
+        print(album_info(artist))
 
 
 
