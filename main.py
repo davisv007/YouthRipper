@@ -27,6 +27,20 @@ class MyLogger(object):
         print(msg)
 
 
+def times_to_stamps(x):
+    times = [list(reversed(time.split(':'))) for time in x]
+    new_times=[]
+    for time in times:
+        new_time = 0
+        for index,unit in enumerate(time):
+            new_time +=int(unit)*(60**index)
+        new_times.append(new_time)
+    newer_time=[0]
+    for index,time in enumerate(new_times):
+        newer_time.append(str(datetime.timedelta(seconds=time+sum(new_times[:index]))))
+    return newer_time
+
+
 def search_tracks(artist):
     album_tracks = pylast.Album(artist, album, network)
     tracks = album_tracks.get_tracks()
