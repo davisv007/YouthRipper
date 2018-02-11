@@ -1,6 +1,11 @@
 from flask import Flask, request, render_template
 from flask_wtf import Form
 from wtforms import FloatField
+from .main import main
+
+
+
+
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -9,15 +14,15 @@ app.config['SECRET_KEY'] = 'stuff'
 @app.route('/', methods=['GET', 'POST'])
 def divide():
 
-    class DivideForm(Form):
-        numerator = FloatField("Number")
-        denominator = FloatField("Divide by")
+    class UrlLink(Form):
+        webLink = FloatField("Albumn Name")
 
-    form = DivideForm()
+
+    form = UrlLink()
     result = None
 
     if form.validate_on_submit():
-        result = form.numerator.data / form.denominator.data
+        result = form.webLink.data
 
     return render_template('divide.html', result=result, form=form)
 
