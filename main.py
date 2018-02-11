@@ -112,18 +112,18 @@ def convert_timestamps_to_milliseconds(timestamps):
     return newtimes
 
 
-def split_tracks_using_milliseconds(audio, artist, timelist, tracks):
+def split_tracks_using_milliseconds(audio, artist, album,timelist, tracks):
     cwd = getcwd()
     for i in range(len(timelist) - 1):
         track = audio[timelist[i]:timelist[i + 1]]
-        track.export(out_f="{0}\output\{1}\{2}.mp3".format(cwd, artist, artist + ' - ' + tracks[i]), format='mp3',
+        track.export(out_f="{0}\output\{1}\{2}\{3}.mp3".format(cwd, artist,album, artist + ' - ' + tracks[i]), format='mp3',
                      bitrate="320k")
     track = audio[timelist[-1]:]
-    track.export(out_f="{0}\output\{1}\{2}.mp3".format(cwd, artist, artist + ' - ' + tracks[-1]),
+    track.export(out_f="{0}\output\{1}\{2}.mp3".format(cwd, artist,album, artist + ' - ' + tracks[-1]),
                  format='mp3', bitrate="320k")
 
 
-def split_tracks_intelligently(audio, artist, timelist, tracks):
+def split_tracks_intelligently(audio, artist, album,timelist, tracks):
     cwd = getcwd()
     tolerance = 1500  # 3 seconds
     new_timelist = [timelist[0]]
@@ -137,10 +137,10 @@ def split_tracks_intelligently(audio, artist, timelist, tracks):
 
     for i in range(len(new_timelist) - 1):
         track = audio[new_timelist[i]:new_timelist[i + 1]]
-        track.export(out_f="{0}\output\{1}\{2}.mp3".format(cwd, artist, artist + ' - ' + tracks[i]), format='mp3',
+        track.export(out_f="{0}\output\{1}\{2}.mp3".format(cwd, artist, album,artist + ' - ' + tracks[i]), format='mp3',
                      bitrate="320k")
     track = audio[new_timelist[-1]:]
-    track.export(out_f="{0}\output\{1}\{2}.mp3".format(cwd, artist, artist + ' - ' + tracks[-1]),
+    track.export(out_f="{0}\output\{1}\{2}\{3}.mp3".format(cwd, artist,album, artist + ' - ' + tracks[-1]),
                  format='mp3', bitrate="320k")
 
 
@@ -286,13 +286,13 @@ def main():
     # print(audio_location)
 
     # download album
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([url])
+    # with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+    #     ydl.download([url])
 
     millitimes = convert_timestamps_to_milliseconds(timestamps)
-    # albumaudio = AudioSegment.from_file(audio_location)
-    # split_tracks_using_milliseconds(albumaudio,artist,millitimes,tracks)
-    split_tracks_intelligently(albumaudio, artist, millitimes, tracks)
+    albumaudio = AudioSegment.from_file(audio_location)
+    # split_tracks_using_milliseconds(albumaudio,artist,album,millitimes,tracks)
+    split_tracks_intelligently(albumaudio, artist, album,millitimes, tracks)
     location = "{0}\\output\\{1}\\".format(cwd, artist)
     update_tags(location, artist, album, tracks)
 
