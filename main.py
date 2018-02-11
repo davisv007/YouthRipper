@@ -5,6 +5,12 @@ import re #regular expression module used for searching patterns
 from musixmatch import Musixmatch
 import pylast
 import googlesearch
+
+API_KEY = "a0472e3ba14a8c6b2d373f25f7214f47"
+API_SECRET = "e3706cbf68860e14e3da9bf6968b66c4"
+network = pylast.LastFMNetwork(api_key=API_KEY, api_secret=API_SECRET)
+album = input('What is the album title?: ')
+
 #MyLogger uses the Logger module to display error logs
 class MyLogger(object):
     def debug(self, msg):
@@ -17,10 +23,29 @@ class MyLogger(object):
         print(msg)
 
 #Determines when video is done converting
-def search_tracks():
-    tracks = googlesearch.search(album,)
-    pass
 
+
+def search_tracks(artist):
+    album_tracks = pylast.Album(artist, album, network)
+    tracks = album_tracks.get_tracks()
+    # print(str(tracks[0]).split('-')[1])
+
+    for track in tracks:
+        print(str(track).split('- ')[1])
+    return tracks
+
+
+def album_info(artist):
+    album_information = pylast.Album(artist, album, network)
+    summary = album_information.get_wiki_summary()
+    release_date = album_information.get_release_date()
+    #print(summary)
+    return summary
+
+def got_cover_art(artist):
+    art = pylast.Album(artist, album, network)
+    cover_art =  art.get_cover_image(size=pylast.COVER_EXTRA_LARGE)
+    return cover_art
 def my_hook(d):
     if d['status'] == 'finished':
         print('Done downloading, now converting ...')
@@ -43,13 +68,13 @@ def main():
 
     # url ="https://www.youtube.com/watch?v=4o5baMYWdtQ"
     # url = "https://www.youtube.com/watch?v=-tT32VTll5M" #frank ocean - blonde no track times
-    # url = "https://www.youtube.com/watch?v=FUXX55WqYZs" #tyler the creator - who dat boy
+    url = "https://www.youtube.com/watch?v=FUXX55WqYZs" #tyler the creator - who dat boy
     # url = "https://www.youtube.com/watch?v=D1ZpZ_dvd_4" #artic monkey  with tracktimes in description
     # url = "https://www.youtube.com/watch?v=yzssslz4r70" #plantasia - mort garson with tracktimes in different format
-    url ="https://www.youtube.com/watch?v=q59ZZtiLgYU" # hot funky jazz tracklistings, longer than an hour
+    # url ="https://www.youtube.com/watch?v=q59ZZtiLgYU" # hot funky jazz tracklistings, longer than an hour
 
     # url = "https://www.youtube.com/watch?v=-tT32VTll5M"
-    url = "https://www.youtube.com/watch?v=FUXX55WqYZs"
+    # url = "https://www.youtube.com/watch?v=FUXX55WqYZs"
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         info_dict = ydl.extract_info(url, download=False)
         # print(info_dict.keys())
@@ -57,19 +82,23 @@ def main():
         description = info_dict['description']
         title = info_dict['title']
         duration = info_dict['duration']
-        album_object = pylast.Album(artist, "Flower Boy")
-        length =datetime.timedelta(seconds= duration)
-        print(artist)
-        print(album_object.get_tracks())
-        # print(description)
-        print(title)
-        print(duration)
-        length =datetime.timedelta(seconds= info_dict['duration'])
-        print(artist)
-        print(description)
+        length = datetime.timedelta(seconds=duration)
+        tracks = search_tracks(artist)
+        summary = album_info(artist)
+        genres = info_dict['categories']
+        cover_art = got_cover_art(artist)
+        album_information = {"summary": summary, "genre": genres, "album_length": length}
+        # for key in album_information:
+        #     print(album_information[key])
+        print(cover_art)
+        # print(info_dict['categories'])
+        # # print(info_dict)
+        # print(artist)
+        # print(tracks)
+        # # print(description)
         # print(title)
-        print(title.split())
-        print(length)
+        # print(duration)
+        # print(length)
 
 
 
@@ -84,7 +113,7 @@ def main():
 
     p = re.compile(pattern=pattern) #compiles pattern
     x=p.findall(description)
-    print(x)
+    #print(x)
     # print(len(x))
     # with youtube_dl.YoutubeDL(ydl_opts) as ydl:
     #     ydl.download([url])
@@ -124,9 +153,9 @@ main()
 #
 ###########################################################################################
 # code that searches google images
-import urllib3
-import simplejson
-import cStringIO
+# import urllib3
+# import simplejson
+# import cStringIO
 
 
 #def Parser():
