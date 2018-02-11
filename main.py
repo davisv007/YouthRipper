@@ -12,6 +12,8 @@ from bs4 import BeautifulSoup
 from urllib import request
 from mutagen.mp3 import EasyMP3 as MP3
 from mutagen.id3 import ID3, APIC, error
+import pathlib
+
 
 API_KEY = "a0472e3ba14a8c6b2d373f25f7214f47"
 API_SECRET = "e3706cbf68860e14e3da9bf6968b66c4"
@@ -179,9 +181,9 @@ def getsTimeStamps(albumnName, albumnArtist, maxlen):
 
 
 def save_art(artwork_link, location, album):
-    f = open('{0}{1}\{1}.png'.format(location, album), 'wb')
-    f.write(request.urlopen(artwork_link).read())
-    f.close()
+    with open('{0}{1}\\{2}'.format(location, album,album+'.png'), 'wb') as f:
+        f.write(request.urlopen(artwork_link).read())
+        f.close()
 
 
 def update_tags(location, artist, album, tracklist):
@@ -208,7 +210,7 @@ def update_tags(location, artist, album, tracklist):
                 mime='image/png',  # image/jpeg or image/png
                 type=3,  # 3 is for the cover image
                 desc=u'Cover',
-                data=open("{0}{1}\{1}.png".format(location, album),'rb').read()
+                data=open("{0}{1}\{1}.png".format(location, album), 'rb').read()
             )
         )
         audiofile.save(v2_version=3)
@@ -248,6 +250,7 @@ def main():
         genres = info_dict['categories']
         cover_art = got_cover_art(artist, album)
         # print(cover_art)
+        pathlib.Path("{0}/output/{1}/{2}".format(cwd, artist, album)).mkdir(parents=True, exist_ok=True)
         save_art(cover_art, '{0}\\output\\{1}\\'.format(cwd, artist), album)
         album_information = {"summary": summary, "genre": genres, "album_length": length}
         # for key in album_information:
@@ -270,8 +273,7 @@ def main():
         # print(artist)
         # print(length)
 
-        ydl_opts['outtmpl'] = '/output/{0}/%(title)s.mp3'.format(artist)
-
+        ydl_opts['outtmpl'] = '/output/{0}/{1}/%(title)s.mp3'.format(artist,album)
     # find track times (if present)
     # timestamps = find_timestamps(description)
     # print(timestamps)
@@ -284,13 +286,13 @@ def main():
     # print(audio_location)
 
     # download album
-    # with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-    #     ydl.download([url])
+    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        ydl.download([url])
 
     millitimes = convert_timestamps_to_milliseconds(timestamps)
     # albumaudio = AudioSegment.from_file(audio_location)
     # split_tracks_using_milliseconds(albumaudio,artist,millitimes,tracks)
-    # split_tracks_intelligently(albumaudio, artist, millitimes, tracks)
+    split_tracks_intelligently(albumaudio, artist, millitimes, tracks)
     location = "{0}\\output\\{1}\\".format(cwd, artist)
     update_tags(location, artist, album, tracks)
 
