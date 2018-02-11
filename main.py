@@ -4,6 +4,9 @@ import datetime #date and time stamp
 import re #regular expression module used for searching patterns
 from os import getcwd
 from pydub import AudioSegment,silence
+from urllib.parse import quote
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
 
 
 #MyLogger uses the Logger module to display error logs
@@ -68,18 +71,14 @@ def split_tracks_intelligently(audio,artist,timelist):
     cwd = getcwd()
     tolerance = 1500 #3 seconds
     new_timelist=[timelist[0]]
+
     for i in range(1,len(timelist)):
-        track = audio.get_sample_slice(timelist[i]-tolerance,timelist[i]+tolerance)
-        # print(len(track))
-        # print(track.dBFS)
+        track = audio.get_sample_slice(timelist[i]-tolerance,timelist[i]+(tolerance//2))
         x = silence.detect_silence(track,silence_thresh=track.dBFS,min_silence_len=10)[0]
-        # print(x)
-        new_timestamp = timelist[i]-tolerance+(sum(x)/len(x))+1000
+        new_timestamp = timelist[i]-tolerance+(sum(x)/len(x))+2000
         new_timelist.append(new_timestamp)
         print(datetime.timedelta(seconds=new_timestamp/1000))
-        # break
-        # track = audio[timelist[i]:timelist[i+1]]
-        # track.export(out_f="{0}\output\{1}\{2}.mp3".format(cwd, artist,i),format='mp3',bitrate="320k")
+
     for i in range(len(new_timelist)-1):
         track = audio[new_timelist[i]:new_timelist[i+1]]
         track.export(out_f="{0}\output\{1}\{2}.mp3".format(cwd, artist,i),format='mp3',bitrate="320k")
@@ -93,8 +92,18 @@ def main():
     # url = "https://www.youtube.com/watch?v=FUXX55WqYZs" #tyler the creator - who dat boy
     # url = "https://www.youtube.com/watch?v=D1ZpZ_dvd_4" #artic monkey  with tracktimes in description
     # url = "https://www.youtube.com/watch?v=yzssslz4r70" #plantasia - mort garson with tracktimes in different format
-    url = "https://www.youtube.com/watch?v=B-QddLcds2U" #darksid of the moon - pinkfloyd
+    # url = "https://www.youtube.com/watch?v=B-QddLcds2U" #darkside of the moon - pinkfloyd
     # url ="https://www.youtube.com/watch?v=q59ZZtiLgYU" # hot funky jazz tracklistings, longer than an hour
+
+    textToSearch = input("enter the name of the album you want") + ' full album'
+    query = quote(textToSearch)
+    url = "https://www.youtube.com/results?search_query=" + query
+    response = urlopen(url)
+    html = response.read()
+    soup = BeautifulSoup(html, "html.parser")
+    link_list = ['https://www.youtube.com' + vid['href'] for vid in soup.findAll(attrs={'class': 'yt-uix-tile-link'})]
+    # [print(link) for link in link_list if len(link) == 43]
+    url = link_list[0]
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         info_dict = ydl.extract_info(url, download=False)
@@ -130,16 +139,14 @@ def main():
     # print(audio_location)
 
     # download album
-    # with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-    #     ydl.download([url])
+    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        ydl.download([url])
 
 
     millitimes = convert_timestamps_to_milliseconds(timestamps)
     albumaudio = AudioSegment.from_file(audio_location)
-    # # x =silence.detect_silence(albumaudio)
-    # # print(x)
     # split_tracks_using_milliseconds(albumaudio,artist,millitimes)
-    split_tracks_intelligently(albumaudio,artist,millitimes)
+    # split_tracks_intelligently(albumaudio,artist,millitimes)
 
 
 
