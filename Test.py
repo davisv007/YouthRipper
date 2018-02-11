@@ -1,11 +1,36 @@
-import pylast
+import wikipedia
+import re
+import datetime
 
-API_KEY = "a0472e3ba14a8c6b2d373f25f7214f47"
-API_SECRET = "e3706cbf68860e14e3da9bf6968b66c4"
+def times_to_stamps(x):
+    times = [list(reversed(time.split(':'))) for time in x]
+    new_times=[]
+    for time in times:
+        new_time = 0
+        for index,unit in enumerate(time):
+            new_time +=int(unit)*(60**index)
+        new_times.append(new_time)
+    newer_time=[0]
+    for index,time in enumerate(new_times):
+        newer_time.append(str(datetime.timedelta(seconds=time+sum(new_times[:index]))))
+    return newer_time
 
-network = pylast.LastFMNetwork(api_key=API_KEY, api_secret=API_SECRET)
 
-album = pylast.Album("Tyler, the Creator", "Flower Boy", network)
-tracks = album.get_tracks()
+def main():
+    artist = "Frank Ocean"
+    album3 = "Blonde"
+    albumn = wikipedia.page(artist + album3)
+    # print(albumn.url)
+    albumn2 = albumn.html()
+    # print(albumn2)
 
-print(tracks)
+    pattern =r'[0-9]{2}:[0-9]{2}|[0-9]:[0-9]{2}' #Time stamp length #Hour:Minute:Seconds or Minute:Second or Second:Second
+
+    p = re.compile(pattern=pattern) #compiles pattern
+    x=p.findall(albumn2)
+    print(x)
+    stamps =  times_to_stamps(x)
+    print(stamps)
+
+
+main()
