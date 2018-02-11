@@ -119,7 +119,7 @@ def split_tracks_using_milliseconds(audio, artist, album,timelist, tracks):
         track.export(out_f="{0}\output\{1}\{2}\{3}.mp3".format(cwd, artist,album, artist + ' - ' + tracks[i]), format='mp3',
                      bitrate="320k")
     track = audio[timelist[-1]:]
-    track.export(out_f="{0}\output\{1}\{2}.mp3".format(cwd, artist,album, artist + ' - ' + tracks[-1]),
+    track.export(out_f="{0}\output\{1}\{2}\{3}.mp3".format(cwd, artist,album, artist + ' - ' + tracks[-1]),
                  format='mp3', bitrate="320k")
 
 
@@ -137,7 +137,7 @@ def split_tracks_intelligently(audio, artist, album,timelist, tracks):
 
     for i in range(len(new_timelist) - 1):
         track = audio[new_timelist[i]:new_timelist[i + 1]]
-        track.export(out_f="{0}\output\{1}\{2}.mp3".format(cwd, artist, album,artist + ' - ' + tracks[i]), format='mp3',
+        track.export(out_f="{0}\output\{1}\{2}\{3}.mp3".format(cwd, artist, album,artist + ' - ' + tracks[i]), format='mp3',
                      bitrate="320k")
     track = audio[new_timelist[-1]:]
     track.export(out_f="{0}\output\{1}\{2}\{3}.mp3".format(cwd, artist,album, artist + ' - ' + tracks[-1]),
