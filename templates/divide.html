@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <form method="post" action="{{ url_for('divide') }}">
+            {{ form.hidden_tag() }}
+
+            {{ form.numerator.label }} {{ form.numerator() }}
+            {% if form.numerator.errors %}
+                Error: {{ ', '.join(form.numerator.errors) }}
+            {% endif %}
+
+            {{ form.denominator.label }} {{ form.denominator() }}
+            {% if form.denominator.errors %}
+                Error: {{ ', '.join(form.denominator.errors) }}
+            {% endif %}
+
+            <input type="submit" value="Calculate"/>
+        </form>
+        {% if result %}
+            Result is: {{ result }}
+        {% endif %}
+    </body>
+</html>

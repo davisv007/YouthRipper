@@ -1,18 +1,26 @@
-import os
-import sys
-from routes import app
+from flask import Flask, request, render_template
+from flask_wtf import Form
+from wtforms import FloatField
 
-# Builds the server configuration
-if os.getenv('IP'):
-    IP = os.getenv('IP')
-else:
-    IP = '0.0.0.0'
+app = Flask(__name__)
+app.config['DEBUG'] = True
+app.config['SECRET_KEY'] = 'stuff'
 
-if os.getenv('PORT'):
-    PORT = int(os.getenv('PORT'))
-else:
-    PORT = 8080
+@app.route('/', methods=['GET', 'POST'])
+def divide():
 
-# Print statements go to your log file in production; to your console while developing
-print("Running server at http://{0}:{1}/".format(IP, PORT))
-app.run(host=IP, port=PORT, debug=True, threaded=True)
+    class DivideForm(Form):
+        numerator = FloatField("Number")
+        denominator = FloatField("Divide by")
+
+    form = DivideForm()
+    result = None
+
+    if form.validate_on_submit():
+        result = form.numerator.data / form.denominator.data
+
+    return render_template('divide.html', result=result, form=form)
+
+
+if __name__ == '__main__':
+    app.run(port=5000)
