@@ -51,7 +51,7 @@ def search_tracks(artist, album):
     tracks = album_tracks.get_tracks()
     # print(str(tracks[0]).split('-')[1])
     tracks = [str(track).split('- ')[1] for track in tracks]
-    # [print(track) for track in tracks]
+    # print(tracks)
     return tracks
 
 
