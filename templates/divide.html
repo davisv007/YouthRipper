@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>YOUTHRIPPER</title>
+    <title>YOUTHERIPPER</title>
 </head>
 
 <style>
@@ -13,8 +13,9 @@
     -webkit-transform: translateX(-50%) translateY(-50%);
     transform: translateX(-50%) translateY(-50%);
 }
-
-
+span ~ span {
+padding-left: 20px;
+}
 
 
 </style>
@@ -22,23 +23,24 @@
 <div class="container">
     <header>
         <center>
-            <h1>YouthRipper</h1>
+            <h1>YouTheRipper</h1>
         </center>
         <div>
             <form method="post" action="{{ url_for('divide') }}">
-                {{ form.hidden_tag() }}
-
-                {{ form.webLink.label }} {{ form.webLink() }}
-                {% if form.webLink.errors %}
-                Error: {{ ', '.join(form.webLink.errors) }}
-                {% endif %}
-
-                <input type="submit" value="Download"/>
+                <span>
+                    {{ form.hidden_tag() }}
+                    {{ form.album_field.label }} {{ form.album_field() }}
+                </span>
+                <span>
+                    {{ form.hidden_tag() }}
+                    {{ form.artist_field.label }} {{ form.artist_field() }}
+                </span>
+                <input type="submit" value="Submit"/>
             </form>
         </div>
-        {% if result %}
+        {% if link %}
         <center>
-            <a href="{{result}}" download=result> Download Here </a>
+            <a href="{{link}}" download=link> Download Here </a>
         </center>
         {% endif %}
 
