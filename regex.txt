@@ -3,3 +3,6 @@
 Should be able to identify timestamps
 
 use an online resource to get track names + album art
+
+(?:[1-9]{1,}\.( ){1,})("(.*?)") <- should look for track names using wikipedia
+

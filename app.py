@@ -13,15 +13,18 @@ app.config['UPLOAD_FOLDER'] = 'albumzips/'
 @app.route('/', methods=['GET', 'POST'])
 def divide():
     class UrlLink(FlaskForm):
-        webLink = StringField("Album Name:")
+        album_field = StringField("Album Name:")
+        artist_field = StringField("Artist:")
 
     form = UrlLink()
-    result = None
+    download_link = None
 
     if form.validate_on_submit():
-        result = download(form.webLink.data)
+        artist = form.artist_field.data
+        album = form.album_field.data
+        download_link = download(album, artist)
 
-    return render_template('divide.html', result=result, form=form)
+    return render_template('divide.html', link=download_link, form=form)
 
 
 @app.route('/albumzips/<path:filename>')
