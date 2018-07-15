@@ -9,6 +9,25 @@ FULLALBUMSLOC = path.join(getcwd(), 'fullalbums')
 ZIPLOCATION = path.join(getcwd(), 'albumzips')
 SPLITALBUMSLOC = path.join(getcwd(), 'splitalbums')
 
+
+# Determines when video is done converting
+def my_hook(d):
+    if d['status'] == 'finished':
+        print('Done downloading, now converting ...')
+
+
+# MyLogger uses the Logger module to display error logs
+class MyLogger(object):
+    def debug(self, msg):
+        pass
+
+    def warning(self, msg):
+        pass
+
+    def error(self, msg):
+        print(msg)
+
+
 # Dictates youtube video options based on arguments such as format and artist information
 ydl_opts = {
     'format': 'bestaudio',
@@ -18,4 +37,6 @@ ydl_opts = {
         'preferredcodec': 'mp3',
         'preferredquality': '320'
     }],
+    'logger': MyLogger(),
+    'progress_hooks': [my_hook],
 }
