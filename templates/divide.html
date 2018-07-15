@@ -1,23 +1,49 @@
 <!DOCTYPE html>
-<html>
-    <body>
-        <form method="post" action="{{ url_for('divide') }}">
-            {{ form.hidden_tag() }}
+<html lang="en">
+<head>
+    <title>YOUTHERIPPER</title>
+</head>
 
-            {{ form.numerator.label }} {{ form.numerator() }}
-            {% if form.numerator.errors %}
-                Error: {{ ', '.join(form.numerator.errors) }}
-            {% endif %}
+<style>
+    .container {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    -moz-transform: translateX(-50%) translateY(-50%);
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+}
+span ~ span {
+padding-left: 20px;
+}
 
-            {{ form.denominator.label }} {{ form.denominator() }}
-            {% if form.denominator.errors %}
-                Error: {{ ', '.join(form.denominator.errors) }}
-            {% endif %}
 
-            <input type="submit" value="Calculate"/>
-        </form>
-        {% if result %}
-            Result is: {{ result }}
+</style>
+
+<div class="container">
+    <header>
+        <center>
+            <h1>YouTheRipper</h1>
+        </center>
+        <div>
+            <form method="post" action="{{ url_for('divide') }}">
+                <span>
+                    {{ form.hidden_tag() }}
+                    {{ form.album_field.label }} {{ form.album_field() }}
+                </span>
+                <span>
+                    {{ form.hidden_tag() }}
+                    {{ form.artist_field.label }} {{ form.artist_field() }}
+                </span>
+                <input type="submit" value="Submit"/>
+            </form>
+        </div>
+        {% if link %}
+        <center>
+            <a href="{{link}}" download=link> Download Here </a>
+        </center>
         {% endif %}
-    </body>
+
+    </header>
+</div>
 </html>
