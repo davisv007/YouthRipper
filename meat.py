@@ -1,35 +1,38 @@
-import datetime  # date and time stamp
 import pathlib
 import re  # regular expression module used for searching patterns
 import shutil
-import time
+from datetime import timedelta
 from urllib.parse import quote
 
 import requests
 import wikipedia
-import youtube_dl  # downloads youtube via links
 from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup as bs
 from mutagen.id3 import ID3, APIC
 from mutagen.mp3 import EasyMP3 as MP3
 from pydub import silence, AudioSegment
-from selenium.webdriver import Chrome, ChromeOptions
+from pytube import YouTube
 
 from config import *
 
-from pytube import YouTube
+
+def seconds_hms(seconds):
+    m, s = divmod(seconds, 60)
+    h, m = divmod(m, 60)
+    return "{}:{}:{}".format(h, m, s)
 
 
 def get_info(url):
-    chrome_options = ChromeOptions()
-    chrome_options.add_argument('--headless')
-    driver = Chrome(chrome_options=chrome_options)
-    driver.get(url)
-    time.sleep(2)
-    duration = driver.find_element_by_xpath(
-        "/html/body/ytd-app/div[1]/ytd-page-manager/ytd-watch/div[2]/div[1]/div[1]/div/div[21]/div[2]/div[1]/div/span[3]").text
-    description = driver.find_element_by_xpath('//*[@id="description"]').get_attribute("innerText")
-    driver.quit()
-    return duration, description
+    # pytube is installed from latest source on their github: https://github.com/nficano/pytube
+    yt = YouTube(url)
+    duration = seconds_hms(int(yt.length))
+    title = yt.title
+    page_html = yt.watch_html
+    soup = bs(page_html, "html.parser")
+    description_html = soup.find("p", attrs={"id": "eow-description"})
+    description = bs(str(description_html).replace('<br/>', '\n<br/>'), "html.parser").text
+
+    return title, duration, description
 
 
 def fix_filename(string):
@@ -46,7 +49,7 @@ def song_lengths_to_timesstamps(x):
         new_times.append(new_time)
     newer_time = ['0:00:00']
     for index, time in enumerate(new_times):
-        newer_time.append(str(datetime.timedelta(seconds=time + sum(new_times[:index]))))
+        newer_time.append(str(timedelta(seconds=time + sum(new_times[:index]))))
     return newer_time
 
 
@@ -118,7 +121,7 @@ def split_tracks_by_silence(audio, artist, album, timelist, tracks):
         x = silence.detect_silence(track, silence_thresh=track.dBFS, min_silence_len=10)[0]
         new_timestamp = timelist[i] - tolerance + (sum(x) / len(x)) + 2000
         new_timelist.append(new_timestamp)
-        print(datetime.timedelta(seconds=new_timestamp / 1000))
+        print(timedelta(seconds=new_timestamp / 1000))
 
     for i in range(len(new_timelist) - 1):
         track = audio[new_timelist[i]:new_timelist[i + 1]]
@@ -212,37 +215,29 @@ def download(album, artist):
     pathlib.Path(path.join(SPLITALBUMSLOC, artist, album_filename)).mkdir(parents=True, exist_ok=True)
     pathlib.Path(path.join(ZIPLOCATION, artist, album_filename)).mkdir(parents=True, exist_ok=True)
 
+    # get link to video
     url = search_youtube(album)
-    print('Url:{} Artist:{} Album:{}.'.format(url, artist, album))
 
-    ydl_opts['outtmpl'] = path.join(FULLALBUMSLOC, artist, album_filename, '%(title)s.mp3')
+    # get title, duration, description
+    title, duration, description = get_info(url)
 
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        info_dict = ydl.extract_info(url, download=False)
-        title = info_dict['title']
-        # ydl.download([url])
-    duration, description = get_info(url)
-    # print(info_dict)
-    # print(title)
-    # print(description)
-    # print(duration)
-
-    # find track times (if present)
+    # get timestamps from description
     timestamps = get_youtube_time_stamps(description)
     timestamps.append(duration)
-    # if timestamps == []:
-    #     songlengths = get_song_lengths_from_wiki(album, artist)
-    #     timestamps = song_lengths_to_timesstamps(songlengths)
-    # tracks = get_tracks_from_lastfm(artist, album)
 
+    # find track times (if present)
     tracks = get_youtube_tracks(description)
     track_filenames = [fix_filename(track) for track in tracks]
     track_dict = {track: filename for track, filename in zip(tracks, track_filenames)}
 
+    print('Url:{} Artist:{} Album:{}.'.format(url, artist, album))
+    # print(title)
+    # print(description)
+    # print(duration)
     # print(tracks)
     # print(timestamps)
-    # print(path.exists(path.join(FULLALBUMSLOC, artist, album_filename, title+'.mp3')))
 
+    # get cover art, save it
     cover_art = get_cover_art(artist, album)
     save_art(cover_art, path.join(SPLITALBUMSLOC, artist, album))
 
@@ -253,15 +248,10 @@ def download(album, artist):
     # convert list of time stamps into milliseconds
     millitimes = timestamps_to_milliseconds(timestamps)
     split_tracks_using_milliseconds(albumaudio, artist, album, millitimes, track_dict)
-    # split_tracks_by_silence(albumaudio, artist, album,millitimes, tracks)
 
     # add tags
-    # location = path.join(FULLALBUMSLOC, artist)
     update_tags(artist, album, track_dict)
 
-    # make
+    # make zip file
     shutil.make_archive(path.join(ZIPLOCATION, artist, album), 'zip', path.join(SPLITALBUMSLOC, artist, album))
     return path.join('albumzips', artist, album + '.zip')
-
-# if __name__ == '__main__':
-# #     download(input("enter the name of the album you want: "))
