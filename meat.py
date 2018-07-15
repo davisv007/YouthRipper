@@ -6,6 +6,7 @@ from urllib.parse import quote
 
 import requests
 import wikipedia
+import youtube_dl
 from bs4 import BeautifulSoup
 from bs4 import BeautifulSoup as bs
 from mutagen.id3 import ID3, APIC
@@ -220,6 +221,12 @@ def download(album, artist):
 
     # get title, duration, description
     title, duration, description = get_info(url)
+    print('Url:{} Artist:{} Album:{}.'.format(url, artist, artist))
+
+    # download album
+    ydl_opts['outtmpl'] = path.join('fullalbums', artist, album, '%(title)s.mp3')
+    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        ydl.download([url])
 
     # get timestamps from description
     timestamps = get_youtube_time_stamps(description)

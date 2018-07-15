@@ -8,3 +8,14 @@ network = pylast.LastFMNetwork(api_key=API_KEY, api_secret=API_SECRET)
 FULLALBUMSLOC = path.join(getcwd(), 'fullalbums')
 ZIPLOCATION = path.join(getcwd(), 'albumzips')
 SPLITALBUMSLOC = path.join(getcwd(), 'splitalbums')
+
+# Dictates youtube video options based on arguments such as format and artist information
+ydl_opts = {
+    'format': 'bestaudio',
+    'outtmpl': '/output/%(artist)s/%(title)s.mp3',
+    'postprocessors': [{
+        'key': 'FFmpegExtractAudio',
+        'preferredcodec': 'mp3',
+        'preferredquality': '320'
+    }],
+}
